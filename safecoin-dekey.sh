@@ -1,21 +1,21 @@
 #!/bin/bash
 
-# Read standard input, replace all occurrences of any Solana validator
+# Read standard input, replace all occurrences of any SafeCoin validator
 # vote account pubkey or validator id pubkey with the validator name
 
 # Cache this information in a file that can be re-used so that the data
 # does not have to be loaded again
 
 # Usage:
-#   solana-dekey.sh [-j <json_rcp_endpoint>] [-c <cache_file>] < input
+#   safecoin-dekey.sh [-j <json_rcp_endpoint>] [-c <cache_file>] < input
 #
 #       <json_rcp_endpoint> is the URL of the RPC endpoint to query.  Only
 #           used if the cache file is not present and data must be fetched
-#           from RPC.  Defaults is https://api.mainnet-beta.solana.com
+#           from RPC.  Defaults is https://api.mainnet-beta.safecoin.org
 #
 #       <cache_file> is the name of the cache file to use to store vote
 #           account info.  It will be re-used if it is present, otherwise
-#           it will be re-generated.  Default is ./solana-dekey.cache
+#           it will be re-generated.  Default is ./safecoin-dekey.cache
 
 
 function die ()
@@ -48,7 +48,7 @@ function make_string ()
 
 
 # Check for required programs
-required solana
+required ~/Safecoin/target/release/safecoin
 required base64
 required jq
 required curl
@@ -95,7 +95,7 @@ function build_cache ()
     # The easiest way to do this is with the solana command, which
     # knows how to read and parse validator info program data
 
-    for word in $(solana --output=json validator-info get | \
+    for word in $(~/Safecoin/target/release/safecoin --output=json validator-info get | \
                       jq -r '( .[] | select(.info.name != "") | .identityPubkey + " " + ( .info.name | @base64 ))'); do
         echo "$word"
     done > $cache_file
@@ -116,8 +116,8 @@ function build_cache ()
 
 
 # Default values
-RPC=https://api.mainnet-beta.solana.com
-CACHE_FILE=./solana-dekey.cache
+RPC=https://api.mainnet-beta.safecoin.org
+CACHE_FILE=./safecoin-dekey.cache
 
 # Parse args
 while [ $# -gt 0 ]; do
