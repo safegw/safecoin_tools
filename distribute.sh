@@ -5,9 +5,9 @@
 # Path configuration ---------------------------------------------------------
 
 # Replace the following with the path to your solana bin
-SOLANA_BIN=YOUR_SOLANA_BIN
+SAFECOIN_BIN=~/SAfecoin/target/release
 
-SOLANA=$SOLANA_BIN/solana
+SAFECOIN=$SAFECOIN_BIN/safecoin
 
 DC=/usr/bin/dc
 
@@ -27,7 +27,7 @@ VALIDATOR_ACCOUNT=YOUR_VALIDATOR_ACCOUNT_PUBKEY
 # Replace the following with your vote account pubkey
 VOTE_ACCOUNT=YOUR_VOTE_ACCOUNT_PUBKEY
 
-# Replace the following with the solana account to distribute excess
+# Replace the following with the safecoin account to distribute excess
 # validator earnings to
 DISTRIBUTION_ACCOUNT=YOUR_DISTRIBUTION_ACCOUNT_PUBKEY
 
@@ -38,7 +38,7 @@ DISTRIBUTION_ACCOUNT=YOUR_DISTRIBUTION_ACCOUNT_PUBKEY
 # Minimum to keep in the Validator account
 VALIDATOR_TARGET=20
 
-# Minimum SOL to transact at one time (to prevent transaction fees from being
+# Minimum SAFE to transact at one time (to prevent transaction fees from being
 # an excessive percentage of the transacted amount)
 MIN_TRANSACTION=1
 
@@ -82,11 +82,11 @@ function is-less-than ()
 }
 
 
-function run-solana-cmd ()
+function run-safecoin-cmd ()
 {
-    msg "solana $1"
+    msg "safecoin $1"
 
-    $SOLANA $1
+    $SAFECOIN $1
 
     TRANSACTED=1
 }
@@ -98,15 +98,15 @@ function run-solana-cmd ()
 msg "**__$(date)__**"
 
 # Determine total supply in validator
-VALIDATOR_TOTAL=$($SOLANA balance $VALIDATOR_ACCOUNT | awk '{ print $1 }')
+VALIDATOR_TOTAL=$($SAFECOIN balance $VALIDATOR_ACCOUNT | awk '{ print $1 }')
 
 # Determine total supply of the vote account, but always leave at least 1
-VOTE_TOTAL=$($SOLANA balance $VOTE_ACCOUNT | awk '{ print $1 }')
+VOTE_TOTAL=$($SAFECOIN balance $VOTE_ACCOUNT | awk '{ print $1 }')
 
 msg "Validator account: $VALIDATOR_ACCOUNT"
-msg "Balance: $VALIDATOR_TOTAL SOL"
+msg "Balance: $VALIDATOR_TOTAL SAFE"
 msg "Vote account: $VOTE_ACCOUNT"
-msg "Balance: $VOTE_TOTAL SOL"
+msg "Balance: $VOTE_TOTAL SAFE"
 
 VOTE_AVAILABLE=$($DC -e "10 k $VOTE_TOTAL $MIN_VOTE_BALANCE - p")
 if is-less-than $VOTE_AVAILABLE 0; then
@@ -133,11 +133,11 @@ fi
 if [ $TO_VALIDATOR = 0 ]; then
   msg "Validator account does not need topping up."    
 elif is-less-than $TO_VALIDATOR $MIN_TRANSACTION; then
-  msg "Not enough SOL in vote account to top up validator.  Skipping distribution."
+  msg "Not enough SAFE in vote account to top up validator.  Skipping distribution."
 else
   msg "**Sending $TO_VALIDATOR from vote account to validator account.**"
 
-  run-solana-cmd "withdraw-from-vote-account -k $VALIDATOR_KEYPAIR --commitment finalized $VOTE_ACCOUNT $VALIDATOR_ACCOUNT $TO_VALIDATOR"
+  run-safecoin-cmd "withdraw-from-vote-account -k $VALIDATOR_KEYPAIR --commitment finalized $VOTE_ACCOUNT $VALIDATOR_ACCOUNT $TO_VALIDATOR"
 fi
 
 
@@ -145,7 +145,7 @@ fi
 # Distribute from validator --------------------------------------------------
 
 # Turns out that block production pays more in rewards than voting uses in
-# fees so the validator account can actually accumulate SOL and needs to be
+# fees so the validator account can actually accumulate SAFE and needs to be
 # drained as well
 
 VALIDATOR_TOTAL=$($DC -e "10 k $VALIDATOR_TOTAL $TO_VALIDATOR + p")
@@ -156,7 +156,7 @@ if is-less-than $TO_DISTRIBUTE $MIN_TRANSACTION; then
 else
   msg "**Sending $TO_DISTRIBUTE from validator account to $DISTRIBUTION_ACCOUNT**"
 
-  run-solana-cmd "transfer -k $VALIDATOR_KEYPAIR --commitment finalized $DISTRIBUTION_ACCOUNT $TO_DISTRIBUTE"
+  run-safecoin-cmd "transfer -k $VALIDATOR_KEYPAIR --commitment finalized $DISTRIBUTION_ACCOUNT $TO_DISTRIBUTE"
 
 fi
 
@@ -175,7 +175,7 @@ if is-less-than $TO_DISTRIBUTE $MIN_TRANSACTION; then
 else
   msg "**Sending $TO_DISTRIBUTE from vote account to $DISTRIBUTION_ACCOUNT**"
 
-  run-solana-cmd "withdraw-from-vote-account -k $VALIDATOR_KEYPAIR --commitment finalized $VOTE_ACCOUNT $DISTRIBUTION_ACCOUNT $TO_DISTRIBUTE"
+  run-ssafecoin-cmd "withdraw-from-vote-account -k $VALIDATOR_KEYPAIR --commitment finalized $VOTE_ACCOUNT $DISTRIBUTION_ACCOUNT $TO_DISTRIBUTE"
 fi
 
 
@@ -183,6 +183,6 @@ fi
 # Final status ---------------------------------------------------------------
 
 if [ -n "$TRANSACTED" ]; then
-  msg "Validator account final balance: $($SOLANA balance $VALIDATOR_ACCOUNT)"
-  msg "Vote account final balance: $($SOLANA balance $VOTE_ACCOUNT)"
+  msg "Validator account final balance: $($SAFECOIN balance $VALIDATOR_ACCOUNT)"
+  msg "Vote account final balance: $($SAFECOIN balance $VOTE_ACCOUNT)"
 fi
