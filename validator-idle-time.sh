@@ -36,13 +36,13 @@ function duration ()
 }
 
 
-EPOCH=$(solana epoch-info | grep ^Epoch: | awk '{ print $2 }')
+EPOCH=$(~/Safecoin/target/release/safecoin epoch-info | grep ^Epoch: | awk '{ print $2 }')
 
 SLOT=$(($EPOCH*432000-1))
 
 FIRST_LEADER_SLOT=
 
-solana leader-schedule --no-address-labels | grep $VALIDATOR_IDENTITY | awk '{ print $1 }' |
+~/Safecoin/target/release/safecoin leader-schedule --no-address-labels | grep $VALIDATOR_IDENTITY | awk '{ print $1 }' |
     while read NEXT_SLOT; do
         if [ $NEXT_SLOT -eq $((SLOT+1)) ]; then
             if [ -z "$FIRST_LEADER_SLOT" ]; then
