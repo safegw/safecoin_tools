@@ -5,10 +5,10 @@
 # Emits the mappings as a list on stdout.
 #
 # Usage:
-#   solana-address-list.sh [-j <json_rcp_endpoint>]
+#   safecoin-address-list.sh [-j <json_rcp_endpoint>]
 # 
 #       <json_rcp_endpoint> is the URL of the RPC endpoint to query.  Default
-#           is https://api.mainnet-beta.solana.com
+#           is https://api.mainnet-beta.safecoin.org
 
 function die ()
 {
@@ -27,14 +27,14 @@ function required ()
 
 
 # Check for required programs
-required solana
+required ~/Safecoin/target/release/safecoin
 required base64
 required jq
 required curl
 
 
 # Default values
-RPC=https://api.mainnet-beta.solana.com
+RPC=https://api.mainnet-beta.safecoin.org
 
 
 # Parse args
@@ -60,7 +60,7 @@ done
 # map from validator_pubkey to name
 declare -A validator_map
 
-for word in $(solana --output=json validator-info get | \
+for word in $(~/Safecoin/target/release/safecoin --output=json validator-info get | \
                   jq -r '( .[] | select(.info.name != "") | .identityPubkey + "=" + ( .info.name | @base64 ))'); do
     key=$(echo "$word" | cut -d = -f 1)
     name=$(echo "$word" | cut -d = -f 2- | base64 -d)
