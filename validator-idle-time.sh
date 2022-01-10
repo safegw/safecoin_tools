@@ -2,11 +2,11 @@
 
 # Prints the leader and idle times in slots (and estimated time duration) of a validator
 # Usage: validator-idle-time <VALIDATOR_IDENTITY> [<SECONDS_PER_SLOT>]
-#   <SECONDS_PER_SLOT> is optional, if not provided, 0.55 is used
+#   <SECONDS_PER_SLOT> is optional, if not provided, 0.465 is used
 
 if [ $# -lt 1 -o $# -gt 2 ]; then
     echo "Usage: validator-idle-time <VALIDATOR_IDENTITY> [<SECONDS_PER_SLOT>]"
-    echo "    <SECONDS_PER_SLOT> is optional, if not provided, 0.55 is used"
+    echo "    <SECONDS_PER_SLOT> is optional, if not provided, 0.465 is used"
     exit -1
 fi
 
@@ -15,7 +15,7 @@ VALIDATOR_IDENTITY=$1
 if [ -n "$2" ]; then
     SECONDS_PER_SLOT=$2
 else
-    SECONDS_PER_SLOT=0.55
+    SECONDS_PER_SLOT=0.465
 fi
 
 function duration ()
