@@ -4,8 +4,8 @@
 # ----------------------------------------------------------------------------
 # Path configuration ---------------------------------------------------------
 
-# Replace the following with the path to your solana bin
-SAFECOIN_BIN=~/SAfecoin/target/release
+# Replace the following with the path to your safecoin bin
+SAFECOIN_BIN=~/Safecoin/target/release
 
 SAFECOIN=$SAFECOIN_BIN/safecoin
 
@@ -175,7 +175,7 @@ if is-less-than $TO_DISTRIBUTE $MIN_TRANSACTION; then
 else
   msg "**Sending $TO_DISTRIBUTE from vote account to $DISTRIBUTION_ACCOUNT**"
 
-  run-ssafecoin-cmd "withdraw-from-vote-account -k $VALIDATOR_KEYPAIR --commitment finalized $VOTE_ACCOUNT $DISTRIBUTION_ACCOUNT $TO_DISTRIBUTE"
+  run-safecoin-cmd "withdraw-from-vote-account -k $VALIDATOR_KEYPAIR --commitment finalized $VOTE_ACCOUNT $DISTRIBUTION_ACCOUNT $TO_DISTRIBUTE"
 fi
 
 
